@@ -1,0 +1,103 @@
+@startuml HanoiMetroTicketAppAnalysis
+
+!define METADATA class
+
+class "User" {
+  - UserID
+  - Username
+  - Password
+  - Email
+  - Phone Number
+  # PaymentAccounts
+  + Register()
+  + Authenticate()
+  + ManagePaymentAccounts()
+}
+
+class "Ticket" {
+  - TicketID
+  - Type
+  - Price
+  - StartStation
+  - EndStation
+  - ExpiryDate
+  + BookTicket()
+  + CancelTicket()
+  + GenerateTicketImage()
+  + ViewTicketInformation()
+}
+
+class "Payment" {
+  - PaymentID
+  - PaymentMethod
+  + ProcessPayment()
+  + DeductPayment()
+  + ViewPaymentHistory()
+}
+
+class "Station" {
+  - StationID
+  - Name
+  - Location
+  + ViewSchedule()
+  + CheckIn()
+  + CheckOut()
+}
+
+class "Schedule" {
+  - RouteID
+  - DepartureTime
+  - ArrivalTime
+  + ViewStationSchedule()
+  + ViewRouteSchedule()
+}
+
+class "Route" {
+  - RouteID
+  - Stations
+  + ViewStationsOnRoute()
+  + CalculateFare()
+}
+
+class "Booking" {
+  - BookingID
+  - UserID
+  - TicketID
+  - BookingDateTime
+  + MakeReservation()
+  + CancelReservation()
+  + CalculateCancellationFee()
+}
+
+class "TicketGate" {
+  - GateID
+  - Location
+  + ScanTicket()
+}
+
+class "PaymentService" {
+  - ServiceID
+  - ServiceProvider
+  + LinkAccount()
+  + ProcessPayment()
+}
+
+User "1" -- "1..*" Ticket : Book
+User "1" -- "1..*" Payment : Use
+User "1" -- "1..*" Booking : Make
+User "1" -- "0..*" PaymentService : Use
+
+TicketGate "1" -- "*" Ticket : Accept
+
+Ticket "1" -- "0..*" Route : On
+Ticket "1" -- "1" Schedule : For
+
+Booking "1" -- "1" Ticket : Reserves
+Booking "1" -- "1" User : Made by
+
+Route "1" -- "*" Station : Passes through
+Route "1" -- "1" Schedule : Follows
+
+Station "1" -- "*" Schedule : Has
+
+@enduml

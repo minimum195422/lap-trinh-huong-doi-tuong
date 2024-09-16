@@ -1,0 +1,58 @@
+@startuml HanoiMetroBookTicketSequenceDiagram
+
+!define METADATA sequence
+
+actor User
+participant "Mobile App" as App
+participant "Ticket System" as TicketSystem
+participant "Payment System" as PaymentSystem
+participant "Metro Station" as Station
+
+User -> App: 1. Request to book ticket
+activate App
+
+alt User is authenticated
+    App -> App: 2. Display ticket options
+    App -> User: 3. Selects ticket type
+    activate User
+    alt Flexible Ticket
+        App -> User: 4. Specify trip details
+        User -> App: 5. Number of trips
+        App -> App: 6. Calculate price
+    else
+        App -> User: 4. Select start station
+        User -> App: 5. Start station
+        App -> User: 6. Select end station
+        User -> App: 7. End station
+        App -> App: 8. Calculate price
+    end
+
+    User -> App: 9. Select payment method
+    App -> App: 10. Display payment options
+
+    alt E-wallet or Credit Card
+        User -> App: 11. Select payment method
+        App -> PaymentSystem: 12. Process payment
+        activate PaymentSystem
+        PaymentSystem --> App: 13. Payment success
+        deactivate PaymentSystem
+        App -> App: 14. Generate ticket
+        App -> User: 15. Provide ticket
+    else
+        alt Cash
+            App -> User: 16. Provide cash payment instructions
+            User -> Station: 17. Pay in cash at station
+            Station -> App: 18. Confirm cash payment
+            App -> App: 19. Generate ticket
+            App -> User: 20. Provide ticket
+        else
+            App -> User: 21. Invalid payment method
+        end
+    end
+else
+    App -> User: 22. Display authentication message
+end
+
+User -> App: 23. End
+deactivate User
+@enduml
